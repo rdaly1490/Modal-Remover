@@ -20,7 +20,8 @@
   /* 
   MARK: -
   Find the highest z-index element on the page 
-  and hide the element, this is likely the modal
+  and hide the element and any others at that z-index,
+  these elements are likely the modal and elements
   blocking the page's content
   */
 
@@ -28,23 +29,28 @@
   const customWebComponents = getAllCustomWebComponentNodes();
   const elementsToCheck = [...divs, ...customWebComponents];
 
-  const highestElement = elementsToCheck.reduce((highestDiv, currentDiv) => {
-    const { zIndex: highestDivZIndex } = window.getComputedStyle(highestDiv);
-    const { zIndex, display, visibility } = window.getComputedStyle(currentDiv);
+  const maxZIndex = elementsToCheck.reduce((maxZIndex, el) => {
+    const { zIndex, display, visibility } = window.getComputedStyle(el);
 
-    const { height, width } = currentDiv.getBoundingClientRect();
+    const { height, width } = el.getBoundingClientRect();
     const currentZIndex = +zIndex || 0;
-    const highestZIndex = +highestDivZIndex || 0;
 
     // Magic numbers, we assume the modal must be at least this large
     const meetsMinimumModalDimensions = height > 150 && width > 150;
     const isVisible = display !== "none" && visibility !== "hidden";
     const meetsStyleRequirements = isVisible && meetsMinimumModalDimensions;
-    const isNewHighestDiv = currentZIndex > highestZIndex;
+    const isNewHighestDiv = currentZIndex > maxZIndex;
 
-    return isNewHighestDiv && meetsStyleRequirements ? currentDiv : highestDiv;
-  }, elementsToCheck[0]);
-  highestElement.setAttribute("style", "display: none !important");
+    return isNewHighestDiv && meetsStyleRequirements ? zIndex : maxZIndex;
+  }, 0);
+
+  const highestElements = elementsToCheck.filter(element => {
+    return window.getComputedStyle(element).zIndex === maxZIndex;
+  });
+
+  highestElements.forEach(element => {
+    element.setAttribute("style", "display: none !important");
+  });
 
   /* 
   MARK: -
@@ -105,9 +111,12 @@
     page.setAttribute("style", "position:inherit !important");
 
     // they have some sneaky ads that get past the ad blocker
-    const fbAds = [...document.getElementsByTagName("fbs-ad")];
-    fbAds.forEach(fbAd => {
-      fbAd.setAttribute("style", "display: none !important");
+    const ads = [
+      ...document.getElementsByTagName("fbs-ad"),
+      ...document.getElementsByTagName("amp-img")
+    ];
+    ads.forEach(ad => {
+      ad.setAttribute("style", "display: none !important");
     });
   }
 })();
