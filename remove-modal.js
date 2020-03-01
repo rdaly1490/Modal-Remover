@@ -69,7 +69,12 @@
   const classNamesToAvoid = ["open", "modal", "message", "no-touch"];
   const classListIndexes = classList => {
     return [...classList].reduce((acc, classText, index) => {
-      return classNamesToAvoid.includes(classText) ? [...acc, index] : acc;
+      const classContainsWordToAvoid =
+        classText.includes("open") ||
+        classText.includes("modal") ||
+        classText.includes("message") ||
+        classText.includes("no-touch");
+      return classContainsWordToAvoid ? [...acc, index] : acc;
     }, []);
   };
 
