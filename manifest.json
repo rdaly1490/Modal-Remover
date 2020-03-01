@@ -1,0 +1,12 @@
+{
+  "name": "Modal Remover",
+  "version": "1.0",
+  "description": "Remove modal from a page",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "browser_action": {},
+  "permissions": ["tabs", "http://*/*", "https://*/*"],
+  "manifest_version": 2
+}
