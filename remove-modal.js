@@ -44,7 +44,6 @@
 
     return isNewHighestDiv && meetsStyleRequirements ? currentDiv : highestDiv;
   }, elementsToCheck[0]);
-  console.log(highestElement);
   highestElement.setAttribute("style", "display: none !important");
 
   /* 
